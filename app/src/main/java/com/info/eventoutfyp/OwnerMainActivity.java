@@ -32,7 +32,6 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
     private DrawerLayout drawer;
 
     //private String email,name;
-    //int selen = 0;
 
 
     @Override
