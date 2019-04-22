@@ -30,10 +30,8 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
     private DrawerLayout drawer;
-    private DatabaseReference databaseReference;
-    private int temp;
-    private String email,name;
 
+    //private String email,name;
 
 
     @Override
@@ -60,21 +58,16 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
                     finish();
                 }
 
-                name = user.getUid();
-                email = user.getEmail();
-                ((TextView) findViewById(R.id.nameLabel)).setText(name);
-                ((TextView) findViewById(R.id.emailLabel)).setText(email);
-
+                //name = user.getUid();
+                //email = user.getEmail();
+                //((TextView) findViewById(R.id.nameLabel)).setText(name);
+                //((TextView) findViewById(R.id.emailLabel)).setText(email);
 
             }
         };
 
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -87,22 +80,6 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new EventsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_events);
         }
-
-//
-//        databaseReference = FirebaseDatabase.getInstance().getReference(user.getUid());
-//        //email.setText(user.getEmail());
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                name.setText(user.getId());
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Toast.makeText(OwnerMainActivity.this, databaseError.getCode(),Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
 
     }
