@@ -2,6 +2,7 @@ package com.info.eventoutfyp;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -19,6 +21,9 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.Calendar;
 
@@ -30,12 +35,14 @@ public class EventsFragment extends Fragment implements View.OnClickListener {
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog, timePickerDialog2;
     private String amPm;
-    private FirebaseAuth auth;
+    private String venueID;
+    private Double lat, lon;
+    private String placeName;
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
 
-    private DatabaseReference mDatabase;
-
+    //private DatabaseReference databaseReference;
+    private DatabaseReference mDatabase,databaseReference;
 
     @Nullable
     @Override
@@ -44,7 +51,7 @@ public class EventsFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.create_event,container,false);
 
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
+        venueID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //Bind views with their ids
         titleEdittext=(EditText)view.findViewById(R.id.event_title);
@@ -55,7 +62,11 @@ public class EventsFragment extends Fragment implements View.OnClickListener {
         publishButton=(Button)view.findViewById(R.id.create_event);
         quotaEdittext=(EditText)view.findViewById(R.id.event_quota);
 
+        databaseReference = firebaseDatabase.getReference("Users").child(venueID);;
         mDatabase = firebaseDatabase.getReference("events");
+
+
+
 
         //Set listeners of views
         dateEdittext.setOnClickListener(this);
@@ -68,7 +79,7 @@ public class EventsFragment extends Fragment implements View.OnClickListener {
         //Get current date
         Calendar calendar= Calendar.getInstance();
 
-            //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
+        //Create datePickerDialog with initial date which is current and decide what happens when a date is selected.
         datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -126,44 +137,65 @@ public class EventsFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.create_event:
                 addEvents();
+                closeKeyboard();
 
- /*               DatabaseReference newEvent = events.push();
-                newEvent.child("title").setValue(title);
-                newEvent.child("description").setValue(desc);
-                newEvent.child("quota").setValue(quota);
-                newEvent.child("date").setValue(date);
-                newEvent.child("start").setValue(time1);
-                newEvent.child("end").setValue(time2);*/
-
-                Toast.makeText(getActivity(), "event created", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Event published", Toast.LENGTH_LONG).show();
         }
     }
 
-        public void addEvents()
-        {
-            String title = titleEdittext.getText().toString();
-            String desc = descEdittext.getText().toString();
-            String quota = quotaEdittext.getText().toString();
-            String time1 = timeEdittext.getText().toString();
-            String time2 = time2Edittext.getText().toString();
-            String date = dateEdittext.getText().toString();
-            String id = mDatabase.push().getKey();
-            String venueId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            Event event = new Event(title, venueId, desc, true, " ", quota, date, time1, time2 );
-            mDatabase.child(id).setValue(event);
-            timeEdittext.setText("");
-            dateEdittext.setText("");
-            titleEdittext.setText("");
-            descEdittext.setText("");
-            quotaEdittext.setText("");
-            timeEdittext.setText("");
-            time2Edittext.setText("");
+    public void addEvents()
+    {
+        String title = titleEdittext.getText().toString();
+        String desc = descEdittext.getText().toString();
+        String quota = quotaEdittext.getText().toString();
+        String time1 = timeEdittext.getText().toString();
+        String time2 = time2Edittext.getText().toString();
+        String date = dateEdittext.getText().toString();
+        String id = mDatabase.push().getKey();
+        String venueId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Event event = new Event(title, venueId, placeName, "fun", desc,
+                quota, date, time1, time2, lat, lon);
+        mDatabase.child(id).setValue(event);
+        timeEdittext.setText("");
+        dateEdittext.setText("");
+        titleEdittext.setText("");
+        descEdittext.setText("");
+        quotaEdittext.setText("");
+        timeEdittext.setText("");
+        time2Edittext.setText("");
 
+    }
+
+    private void closeKeyboard() {
+        View view = this.getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromInputMethod(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                placeName = (String)dataSnapshot.child("placeName").getValue();
+                lat = (Double)dataSnapshot.child("lat").getValue();
+                lon = (Double)dataSnapshot.child("lon").getValue();
 
 
+                if(getActivity()!= null) {
+                    //sal
+                }
+            }
 
+            public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+    }
 
 
 

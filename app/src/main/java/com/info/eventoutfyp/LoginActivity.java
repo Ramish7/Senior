@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     long tayp = (long) snapshot.child("userType").getValue();
 
                                                     if(tayp == 0) {
-                                                        startActivity(new Intent(LoginActivity.this, AttenderMainActivity.class));
+                                                        startActivity(new Intent(LoginActivity.this, AttenderMapsActivity.class));
                                                         finish();
                                                     }
                                                     else{

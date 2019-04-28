@@ -13,12 +13,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import android.widget.Toast;
+import android.os.*;
+import android.annotation.SuppressLint;
 
 
 
@@ -31,7 +27,24 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
     private FirebaseAuth auth;
     private DrawerLayout drawer;
 
-    //private String email,name;
+    private String email,name;
+
+
+    @SuppressLint("HandlerLeak")
+    Handler handle = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case 0:
+                    ((TextView) findViewById(R.id.nameLabel)).setText(name);
+                    ((TextView) findViewById(R.id.emailLabel)).setText(email);
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+    };
 
 
     @Override
@@ -50,7 +63,7 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
                     // user auth state is changed - user is null
                     // launch login activity
@@ -58,10 +71,19 @@ public class OwnerMainActivity extends AppCompatActivity implements NavigationVi
                     finish();
                 }
 
-                //name = user.getUid();
-                //email = user.getEmail();
-                //((TextView) findViewById(R.id.nameLabel)).setText(name);
-                //((TextView) findViewById(R.id.emailLabel)).setText(email);
+                else{
+                    Runnable r =new Runnable() {
+                        @Override
+                        public void run() {
+                            name = user.getUid();
+                            email = user.getEmail();
+
+                            handle.sendEmptyMessage(0);
+                        }
+                    };
+                    Thread th = new Thread(r);
+                    th.start();
+                }
 
             }
         };

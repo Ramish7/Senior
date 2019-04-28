@@ -8,26 +8,31 @@ public class Event implements Serializable {
 
     private String eventTitle, eventDescription, eventID;
     private String eventDate;
-    private boolean discountEnabled;
-    private String discountDescription;
     private String venueID;
     private String eventCapacity;
     private ArrayList<String> categories;
     private String startTime;
     private String endTime;
+    private Double eventLat;
+    private Double eventLon;
+    private String placesName;
+    private String category;
 
     public Event(){}
-    public Event(String eventTitle, String venueID, String eventDescription, boolean discountEnabled, String discountDescription, String eventCapacity, String eventDate, String startTime, String endTime ) {
+
+    public Event(String eventTitle, String venueID, String placesName, String category, String eventDescription, String eventCapacity,
+                 String eventDate, String startTime, String endTime,  Double eventLat, Double eventLon) {
         this.eventTitle = eventTitle;
         this.venueID = venueID;
         this.eventDescription = eventDescription;
         this.eventCapacity = eventCapacity;
-        this.discountDescription = discountDescription;
-        this.discountEnabled = discountEnabled;
-        this.categories = new ArrayList<>();
         this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.eventLat=eventLat;
+        this.eventLon=eventLon;
+        this.placesName=placesName;
+        this.category = category;
     }
 
 
@@ -35,6 +40,17 @@ public class Event implements Serializable {
     public String getEventID(){
         return eventID;
     }
+
+    public Double getEventLat(){
+        return eventLat;
+    }
+
+    public Double getEventLon(){ return eventLon; }
+
+    public String getPlacesName(){return placesName;}
+
+    public String getCategory(){return category;}
+
 
     public void setEventID(String eventID){
         this.eventID = eventID;
@@ -62,19 +78,6 @@ public class Event implements Serializable {
         this.eventTitle = title;
     }
 
-    public boolean getdiscountEnabled(){
-        return discountEnabled;
-    }
-    public void setDiscountEnabled(boolean enabled){
-        this.discountEnabled = enabled;
-    }
-
-    public String getDiscountDescription(){
-        return discountDescription;
-    }
-    public void setDiscountDescription(String description){
-        this.discountDescription = description;
-    }
 
     public String getVenueID(){
         return venueID;
@@ -133,8 +136,6 @@ public class Event implements Serializable {
                 ", endTime='" + endTime + '\'' +
                 ", eventCapacity='" + eventCapacity + '\'' +
                 ", venueID='" + venueID + '\'' +
-                ", discountBool='" + discountEnabled + '\'' +
-                ", discountDesc='" + discountDescription + '\'' +
                 ", categories='" + categories + '\'' +
                 '}';
     }

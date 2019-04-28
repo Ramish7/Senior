@@ -131,34 +131,30 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 
-                                    User user = new User(email, type);
-                                    Toast.makeText(SignupActivity.this, "BEFORE: " + type,
-                                            Toast.LENGTH_SHORT).show();
-
-
-
-                                    FirebaseDatabase.getInstance().getReference("Users")
-                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
-
-
                                     Intent intent1 = new Intent(SignupActivity.this, AttenderMapsActivity.class);
                                     Intent intent2 = new Intent(SignupActivity.this, OwnerMainActivity.class);
-                                    if(type==0)
-                                    {
-                                        //Intent intent1 = new Intent(SignupActivity.this, OwnerMainActivity.class);
-                                        startActivity(intent1);
-                                        Toast.makeText(SignupActivity.this, "AFTER 0: " + type,
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                    else
-                                    {
+
+                                    if (type==1){
+                                        User user = new User(email, type, null, null, "Set Venue Address");
+                                        FirebaseDatabase.getInstance().getReference("Users")
+                                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
 
                                         startActivity(intent2);
                                         Toast.makeText(SignupActivity.this, "AFTER 1: " + type,
                                                 Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
+                                    else if(type==0)
+                                    {
+                                        User user = new User(email, type);
+                                        FirebaseDatabase.getInstance().getReference("Users")
+                                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
 
-
+                                        startActivity(intent1);
+                                        Toast.makeText(SignupActivity.this, "AFTER 0: " + type,
+                                                Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
 
                                 }
                             }
